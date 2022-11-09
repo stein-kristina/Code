@@ -33,7 +33,9 @@
       "windows": {
             "command": "${workspaceRoot}\\Debug\\${fileBasenameNoExtension}.exe"//windows中运行xxx.exe可执行文件
       },
-      "args": [],
+      "args": [
+        "-std=c++14"
+      ],
       "presentation": {
             "reveal": "always",
             "focus": true
