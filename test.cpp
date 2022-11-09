@@ -23,6 +23,12 @@ int orderOfLargestPlusSign(int n, vector<vector<int>>& mines) {\
       matrix[j][k] = min(matrix[j][k],down);
     }
   }
+  
+        for (int i = 0; i < n; ++i){
+            for (int j = 0; j < n; ++j){
+                ans = max(ans, matrix[i][j]);
+            }
+        }
   return ans;
 }
 int main()
