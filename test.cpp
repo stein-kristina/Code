@@ -2,40 +2,69 @@
 using namespace std;
 #define N 1145
 
-struct cmp {
-public:
-    bool operator()(const pair<int,int>& i, const pair<int,int>& j) {
-        return i.first < j.first;
+
+
+
+
+int maxPalindromes(string s, int k) {
+    int n = s.size();
+    int ans=0;
+    unordered_set<int> up,down;
+    for(int i=0;i<n;i++){
+      if(k==1){
+        ans++;
+        up.insert(i);
+        down.insert(i);
+      } 
+      if(i && i<n-1 && s[i-1]==s[i+1]){
+        if(down.find(i-1) != down.end()) continue;//有重叠
+        if(k<=3){
+          ans++;
+          break;
+        }//第一类情况
+        int l = 2;
+        while(i-l >0 && i + l <n && s[i-l]==s[i+l]){
+          if(down.find(i-1) != down.end()) break;
+          l++;
+        //长度为5,7.。。
+        }
+        down.insert(i+l-1);//右边界
+        i= i+l-1-1;
+        ans++;
+      }
+      else if(i<n-1 && s[i]==s[i+1]){
+        if(down.find(i) != down.end() || down.find(i+1) != down.end()) continue;//有重叠
+        if(k<=2){
+          ans++;
+          break;
+        }
+        int l = 1;
+        while(i-l>0 && i+1 +l <n && s[i-l]==s[i+1+l]){
+          l++;
+        }
+        down.insert(i+l);//右边界
+        i= i+1+l-1;
+        ans++;
+        //长度为4,6.。
+      }
     }
-};
+    return ans;
+}
+struct TreeNode {
+      int val;
+      TreeNode *left;
+      TreeNode *right;
+      TreeNode() : val(0), left(nullptr), right(nullptr) {}
+      TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+      TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ };
+
+
 int main()
 {
-  int n;
-  cin>>n;
-  int on =n;
-  vector<pair<int,int>> light;
-  while(on--){
-    int p1,p2;
-    cin>>p1>>p2;
-    light.emplace_back(p1,p2);
-  }
-  sort(light.begin(),light.end());
-  vector<int> remain(n , 1);//最多保留多少灯塔
-  int ans = 1;
-  for(int i=1 ; i<n ;i++){
-    int pos = lower_bound(light.begin(),light.end(), make_pair(light[i].first-light[i].second,0), cmp()) - light.begin();
-    //找到第一个被炸的
-    pos--;//就是第一个没被炸的
-    if(pos < 0){
-      remain[i] = 1;
-    }
-    else{
-      remain[i] = remain[pos]+1;
-    }
-    ans = max(ans,remain[i]);
-  }
-  //用总数减去最大保留的就是最小损坏的
-  cout<< n -ans<<endl;
+  vector<vector<int>> a;
+  vector<int> b={1,11,1,8};
+  cout<<subarrayLCM(b,11);
   system("pause");
   return 0;
 }
