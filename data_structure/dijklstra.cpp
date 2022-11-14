@@ -48,8 +48,7 @@ int main(){
       cout<<st<<"不可到达"<<i<<endl;
       continue;
     }
-    cout<<st<<"到"<<i<<"的最短路程是"<<dis[i]<<' ';
-    cout<<endl;
+    cout<<st<<"到"<<i<<"的最短路程是"<<dis[i]<<' '<<endl;
     cout<<"路径是";
     string s;
     for(int j = path[i]; j!=-1 ; j = path[j]){
@@ -73,7 +72,7 @@ void dijkstra(int start, int n){
   visit.erase(start);//记录已经选择的节点
   for(int i=1;i<n;i++){
     auto &p = arr[bef].mp;
-    int minin=0;
+    int minin=0;//记录最小距离节点的下标
     for(auto it=p.begin() ; it != p.end() ;it++){
       if(befpath + it->second < dis[it->first]){
         dis[it->first] =  befpath + it->second;
