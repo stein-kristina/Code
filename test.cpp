@@ -1,70 +1,89 @@
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 using namespace std;
 #define N 1145
 
+struct TreeNode
+{
+  int val;
+  TreeNode *left;
+  TreeNode *right;
+  TreeNode() : val(0), left(nullptr), right(nullptr) {}
+  TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+  TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+};
+int total;//整个数组的和
+int len;//整个数组的长度
 
-
-
-
-int maxPalindromes(string s, int k) {
-    int n = s.size();
-    int ans=0;
-    unordered_set<int> up,down;
-    for(int i=0;i<n;i++){
-      if(k==1){
-        ans++;
-        up.insert(i);
-        down.insert(i);
-      } 
-      if(i && i<n-1 && s[i-1]==s[i+1]){
-        if(down.find(i-1) != down.end()) continue;//有重叠
-        if(k<=3){
-          ans++;
-          break;
-        }//第一类情况
-        int l = 2;
-        while(i-l >0 && i + l <n && s[i-l]==s[i+l]){
-          if(down.find(i-1) != down.end()) break;
-          l++;
-        //长度为5,7.。。
-        }
-        down.insert(i+l-1);//右边界
-        i= i+l-1-1;
-        ans++;
-      }
-      else if(i<n-1 && s[i]==s[i+1]){
-        if(down.find(i) != down.end() || down.find(i+1) != down.end()) continue;//有重叠
-        if(k<=2){
-          ans++;
-          break;
-        }
-        int l = 1;
-        while(i-l>0 && i+1 +l <n && s[i-l]==s[i+1+l]){
-          l++;
-        }
-        down.insert(i+l);//右边界
-        i= i+1+l-1;
-        ans++;
-        //长度为4,6.。
-      }
+bool dfs(int index , int sum, int siz ,vector<int>& nums){
+  if(index == len-1){
+    if(sum*len == siz*total) return true;
+    return false;
+  }
+  for(int i = index;i < len-1 ;i++){//len-1非空
+    sum+=nums[i];//目前的和
+    siz++;//长度
+    if(sum*len > siz*total) return false;//已经比它大了，再找下去没结果，剪枝
+    if(sum*len == siz*total || dfs(i+1,sum,siz,nums)){
+      return true;
     }
-    return ans;
+    siz--;
+    sum-=nums[i];
+  }
+  return false;
 }
-struct TreeNode {
-      int val;
-      TreeNode *left;
-      TreeNode *right;
-      TreeNode() : val(0), left(nullptr), right(nullptr) {}
-      TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
-      TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
- };
+// bool splitArraySameAverage(vector<int>& nums) {
+//   sort(nums.begin(),nums.end());
+//   len = nums.size();
+//   total=0;
+//   for(int i=0;i<len;i++) total+=nums[i];
+//   return dfs(0,0,0,nums);
+// }
+bool splitArraySameAverage(vector<int> &nums) {
+        int n = nums.size(), m = n / 2;
+        if (n == 1) {
+            return false;
+        }
 
+        int sum = accumulate(nums.begin(), nums.end(), 0);
+        for (int &x : nums) {
+            x = x * n - sum;
+        }
+
+        unordered_set<int> left;
+        for (int i = 1; i < (1 << m); i++) {
+            int tot = 0;
+            for (int j = 0; j < m; j++) {
+                if (i & (1 << j)) {
+                    tot += nums[j];
+                }
+            }
+            if (tot == 0) {
+                return true;
+            }
+            left.emplace(tot);
+        }
+
+        int rsum = accumulate(nums.begin() + m, nums.end(), 0);
+        for (int i = 1; i < (1 << (n - m)); i++) {
+            int tot = 0;
+            for (int j = m; j < n; j++) {
+                if (i & (1 << (j - m))) {
+                    tot += nums[j];
+                }
+            }
+            if (tot == 0 || (rsum != tot && left.count(-tot))) {
+                return true;
+            }
+        }
+        return false;
+}
 
 int main()
 {
-  vector<vector<int>> a;
-  vector<int> b={1,11,1,8};
-  cout<<subarrayLCM(b,11);
+  vector<vector<int>> a={{1,2,2,3,5},{3,2,3,4,4},{2,4,5,3,1},{6,7,1,4,5},{5,1,1,2,4}};
+  vector<int> b = {5,3,11,19,2};
+  cout<<splitArraySameAverage(b);
+
   system("pause");
   return 0;
 }
