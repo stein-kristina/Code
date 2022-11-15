@@ -69,7 +69,7 @@ void dijkstra(int start, int n){
   dis[start] = 0;
   path[start] = -1;//终止
   int bef = start,befpath = 0;
-  visit.erase(start);//记录已经选择的节点
+  visit.erase(start);//删除已经选择的节点
   for(int i=1;i<n;i++){
     auto &p = arr[bef].mp;
     int minin=0;//记录最小距离节点的下标

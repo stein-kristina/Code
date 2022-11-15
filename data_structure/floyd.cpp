@@ -1,64 +1,58 @@
 #include<bits/stdc++.h>
 #define ll long long
 using namespace std;
-const int N=1060;
-int n,t;
-int s[N<<2],sl[N<<2];
-void add(int j,int k){
-	s[++t]=k;
-	sl[t]=sl[j];
-	sl[j]=t;
-	return;
-}
-//老样子，先用邻接表
-int ans;
-bool num[N];
-void dfs(int x,int y,int dep){
-//	cout<<x<<" "<<dep<<endl;
-	if(dep<=2) num[x]=1;
-	bool flag=0;
-	for(int i=sl[x];i;i=sl[i]){//查找它的邻接点
-		int de=s[i];
-		if(de==y) continue;
-		dfs(de,x,dep+1);
-//		cout<<x<<" "<<de<<" "<<num[de]<<" "<<flag<<endl;
-		if(flag){
-			num[de]=1;
-		}
-		if(!num[de]){
-			num[x]=1;
-			num[de]=1;
-			flag=1;
-			num[y]=1;
-			++ans;
-		}
-	}
-	return;
-}
-/*
-7
-1 2
-2 3
-2 4
-4 5
-4 6
-5 7
+#define MAXVEX 1000
+const int N=1000;
 
-*/
+typedef struct
+{
+	char vexs[MAXVEX];//顶点表
+	int arc[MAXVEX][MAXVEX];//邻接矩阵
+	int numVertexte;//当前顶点数
+	int numEdges;//当前边数
+}MGraph;
+
+int dis[N][N];//距离
+int P[N][N];//路径
+int n;//顶点个数
+void floyd(){
+  for(int i=0;i<n;i++){
+    //最外层枚举各个顶点
+    for(int j=0 ; j<n ;j++){
+      for(int k=0; k<n ;k++){
+        if(dis[j][k] > dis[j][i]+dis[i][k]){
+          dis[j][k] = dis[j][i] + dis[i][k];
+          P[j][k] = P[j][i];
+        }
+      }
+    }
+  }
+}
+void init(){
+  for(int i=0; i<n ;i++){
+    for(int j=0 ; j<n ;j++){
+      cin>>dis[i][j];
+      if(i==j) dis[i][i] = 0;
+      P[i][j] = j;
+    }
+  }
+}
+void findpath(int x,int y){
+  //找到x到y的最短路径
+  cout<<"最短距离是:"<<dis[x][y]<<endl;
+  string s;
+  while(P[x][y] != y){
+    s+=to_string(x)+"->";
+    x = P[x][y];
+  }
+  s+= to_string(y);
+  cout<<s<<endl;
+}
 int main()
 {
-	int i,j,k;
-	scanf("%d",&n);
-	t=n;
-	for(i=1;i<=n;++i) s[i]=i,sl[i]=0;
-	for(i=1;i<n;++i){
-		scanf("%d%d",&j,&k);
-		add(j,k);add(k,j);
-	}
-	for(i=1;i<=n;++i) num[i]=0;
-	num[1]=1;
-	dfs(1,0,0);
-	printf("%d\n",ans);
+  memset(dis,INT_MAX,sizeof(dis));
+  memset(P,0,sizeof(P));
+	//输入最初的矩阵信息
   system("pause");
 	return 0;
 }

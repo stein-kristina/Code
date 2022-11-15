@@ -11,48 +11,41 @@ struct TreeNode
   TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
 };
 
-// struct Node{
-//   unordered_set<int> edge;//我儿子
-//   Node(){}
-// };
-vector<unordered_set<int>> dad;//邻接表
-bool light[N];
-int ans = 0;
-void dfstree(int x,int y,int dep){//y是x的爹
-  if(dep<=2) light[x]=true;//与根节点距离小于等于2的先点了
-  bool f = false;//判断x有没有被点亮
-  for(auto it = dad[x].begin();it != dad[x].end();it++){
-    int son = *it;
-    if(son == y) continue;
-    dfstree(son,x,dep+1);
-    if(f){//爹亮了
-      light[son] = true;
+const int dx[8] = {0, 0, 1, -1};
+const int dy[8] = {1, -1, 0, 0};
+bool edge(int &x,int &y,int &m,int &n){
+  return (x==0)||x==m-1||y==0||y==n-1;
+}
+int nearestExit(vector<vector<char>> &maze, vector<int> &entrance)
+{
+  int m =maze.size(), n =maze[0].size();
+  if(edge(entrance[0],entrance[1],m,n)) return 1;
+
+  queue<pair<int,int>> Q;
+  Q.emplace(entrance[0],entrance[1]);
+  maze[entrance[0]][entrance[1]] = '+';
+  int step = 0;
+  while(!Q.empty()){
+    int siz = Q.size();
+    while(siz--){
+      auto p =Q.front();
+      Q.pop();
+      for(int i=0;i<4;i++){
+        int x =p.first+dx[i],y=p.second+dy[i];
+        if(x>=0 && x<m && y>=0 && y<n && maze[x][y]=='.'){
+          if(edge(x,y,m,n)) return step+1;
+          Q.emplace(x,y);
+          maze[x][y] = '+';
+        }
+      }
     }
-    if(!light[son]){
-      //儿子没亮！那就把儿子连上吧
-      light[son] = true;
-      light[x] = true;
-      f = true;
-      light[y] = true;//把爹的爹点了，因为距离还在2内
-      ans++;
-    }
+    step++;
   }
+  return -1;
 }
 int main()
 {
-  int t;
-  cin>>t;
-  dad.resize(t+1);//初始化
-  memset(light,0,sizeof(light));
-  --t;
-  while(t--){
-    int l,r;
-    cin>>l>>r;
-    dad[l].insert(r);//l是r的父亲
-    dad[r].insert(l);
-  }
-  dfstree(1,0,0);
-  cout<<ans<<endl;
+
   system("pause");
   return 0;
 }
