@@ -14,9 +14,14 @@ struct TreeNode
 
 int main()
 {
-  vector<unordered_set<int>> m(2);
-  m[0].insert(1);
-  cout<<*m[0].begin();
+  unordered_map<int,int> m;
+  
+  auto it = m.find(0);
+  if(it!= m.end()){
+    m[0] = min(m[0] , 0);
+  }
+  m[1]=max(m[1],2);
+  cout<<m[0];
   system("pause");
   return 0;
 }
