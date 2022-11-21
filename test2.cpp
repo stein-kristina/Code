@@ -11,17 +11,11 @@ struct TreeNode
   TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
 };
 
-
+int a[100000];
 int main()
 {
-  unordered_map<int,int> m;
-  
-  auto it = m.find(0);
-  if(it!= m.end()){
-    m[0] = min(m[0] , 0);
-  }
-  m[1]=max(m[1],2);
-  cout<<m[0];
+  a[1]=2;
+
   system("pause");
   return 0;
 }

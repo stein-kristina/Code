@@ -1,92 +1,56 @@
 #include <bits/stdc++.h>
-
 using namespace std;
-
-#define N 250
-
-int dis[N];         //计算最短距离
-int path[N];        //找前驱节点
-int edge[N][N]; //边的权值
-
-void dijkstra(int start, int n);
-void init(int n)
+struct TreeNode
 {
-    for (int i = 1; i <= n; i++)
-    {
-        dis[i] = INT_MAX;
-    }
-    for (int i = 1; i <= n; i++)
-    {
-        for (int j = 1; j <= n; j++)
-        {
-            edge[i][j] = INT_MAX;
-            if (i == j)
-                edge[i][j] = 0;
-        }
-    }
+  int val;
+  TreeNode *left;
+  TreeNode *right;
+  TreeNode() : val(0), left(nullptr), right(nullptr) {}
+  TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+  TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+};
+
+vector<vector<int>> adj;//邻接表
+long long gas = 0;//总耗油量
+bool vis[100000];
+int dfs(int index,int &n,int &seats){//int返回座位数字，n是点的个数
+  if(index == n) return 0;
+  if(adj[index].size()==1){
+    vis[index]=true;
+    return seats-1;
+  }
+  int sit = 0;//还剩多少座位
+  vis[index] =true;
+  for(auto &it : adj[index]){
+    if(vis[it]) continue;
+    sit += dfs(it,n,seats);
+    gas += seats-sit;
+  }
+  if(sit > 0){
+    sit--;
+  }
+  else if(sit == 0){
+    return seats-1;
+  }
+  return sit;
+}
+long long minimumFuelCost(vector<vector<int>> &roads, int seats)
+{
+  memset(vis,0,sizeof(vis));
+  int n =roads.size();
+  adj.resize(n+1);
+  for(int i=0;i<roads.size();i++){
+    int p1 = roads[i][0], p2=roads[i][1];
+    adj[p1].push_back(p2);
+    adj[p2].push_back(p1);
+  }
+  dfs(0,n,seats);
+  return gas;
 }
 int main()
 {
-    int t;
-    cin >> t;
-
-    while (t--)
-    {
-        int n, m;
-        cin >> n >> m;
-        init(n);
-        int om = m;
-        while (om--)
-        {
-            int a, b, c;
-            cin >> a >> b >> c;
-            edge[a][b] = min(edge[a][b], c);
-            edge[b][a] = edge[a][b];
-        }
-        dijkstra(1, n);
-        if (dis[n] == INT_MAX)
-        {
-            cout << -1 << endl;
-        }
-        else
-            cout << dis[n] << endl;
-    }
-
-}
-// vector<Node> arr;//存放所有点的集合
-// int dis[101];//计算最短距离
-// int path[101];//找前驱节点
-struct node
-{
-    int u, dis; // u 是当前点的编号， dis是u点距离起点st的距离
-    node() {}
-    node(int _u, int d) : u(_u), dis(d) {}
-    bool operator<(const node &b) const
-    {
-        return dis > b.dis;
-    }
-};
-
-void dijkstra(int start, int n)
-{
-    dis[start] = 0;
-    priority_queue<node> Q;
-    Q.push(node(start, 0));
-    vector<bool> vis(n + 1, 0);
-    path[start] = -1;
-    while (!Q.empty()) {
-        int u = Q.top().u;
-        Q.pop();
-        if (vis[u])
-            continue;
-        vis[u] = true;
-        for (int v = 1; v <= n; v++) { //以u为中介点，看看是否可以更新尚未访问过的点到起点的距离
-            // v未被访问过、u可以到达v、从u去往v距离更小
-            if (!vis[v] && edge[u][v] != INT_MAX && dis[v] > dis[u] + edge[u][v]) {
-                dis[v] = dis[u] + edge[u][v]; // 更新d[v]
-                path[v] = u;
-                Q.push(node(v, dis[v])); // 将v及d[v]入队
-            }
-        }
-    }
+  vector<vector<int>> a={{3,1},{3,2},{1,0},{0,4},{0,5},{4,6}};
+  cout<<minimumFuelCost(a,2);
+  system("pause");
+  return 0;
 }
