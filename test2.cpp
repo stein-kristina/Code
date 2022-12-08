@@ -11,10 +11,12 @@ struct TreeNode
   TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
 };
 
-int a[100000];
+
 int main()
 {
-  a[1]=2;
+  string s = "sa";
+  string &a = s;
+  a = "s";
 
   system("pause");
   return 0;

@@ -9,48 +9,50 @@ struct TreeNode
   TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
   TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
 };
-
-vector<vector<int>> adj;//邻接表
-long long gas = 0;//总耗油量
-bool vis[100000];
-int dfs(int index,int &n,int &seats){//int返回座位数字，n是点的个数
-  if(index == n) return 0;
-  if(adj[index].size()==1){
-    vis[index]=true;
-    return seats-1;
-  }
-  int sit = 0;//还剩多少座位
-  vis[index] =true;
-  for(auto &it : adj[index]){
-    if(vis[it]) continue;
-    sit += dfs(it,n,seats);
-    gas += seats-sit;
-  }
-  if(sit > 0){
-    sit--;
-  }
-  else if(sit == 0){
-    return seats-1;
-  }
-  return sit;
+int dfs(int index,vector<int> &ans,vector<vector<int>> &adj,vector<int> &quiet){
+  int n = quiet.size();
+  int retmin = index;//下标
+  int nummin = quiet[index];
+  for(int &son : adj[index]){
+    if(ans[son] == INT_MAX){
+      int his = dfs(son,ans,adj,quiet);//返回最小的quiet
+      if(nummin > his){
+        nummin = his;
+        retmin = ans[son];
+      }
+    }
+    else{
+      if(nummin > quiet[ans[son]]){
+        nummin = quiet[ans[son]];
+        retmin = ans[son];
+      }
+    }
+  }//ans[son]那个的最小的
+  ans[index] = retmin;//下标
+  return nummin;
 }
-long long minimumFuelCost(vector<vector<int>> &roads, int seats)
+vector<int> loudAndRich(vector<vector<int>> &richer, vector<int> &quiet)
 {
-  memset(vis,0,sizeof(vis));
-  int n =roads.size();
-  adj.resize(n+1);
-  for(int i=0;i<roads.size();i++){
-    int p1 = roads[i][0], p2=roads[i][1];
-    adj[p1].push_back(p2);
-    adj[p2].push_back(p1);
+  int n = quiet.size();
+  vector<int> ans(n,INT_MAX);
+  vector<vector<int>> adj(n);
+  for(auto & pr : richer){
+    adj[pr[1]].push_back(pr[0]);
   }
-  dfs(0,n,seats);
-  return gas;
+  for(int i=0 ; i<n ; i++){
+    if(ans[i] == INT_MAX){
+      dfs(i,ans,adj,quiet);
+    }
+  }
+  return ans;
 }
+
 int main()
 {
-  vector<vector<int>> a={{3,1},{3,2},{1,0},{0,4},{0,5},{4,6}};
-  cout<<minimumFuelCost(a,2);
+  vector<int> a = {3,2,5,4,6,1,7,0}, b = {6, 2, 6, 6, 1, 1, 4, 6, 4, 6, 2, 5, 4, 2, 1};
+  int tar = 10;
+  vector<vector<int>> c = {{1,0},{2,1},{3,1},{3,7},{4,3},{5,3},{6,3}};
+  auto d = loudAndRich(c,a);
   system("pause");
   return 0;
 }
